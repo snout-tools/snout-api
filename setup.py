@@ -14,7 +14,7 @@ def read_long_description():
 
 if __name__ == "__main__":
     setup(
-        name='snout.api',
+        name='snout-api',
         version=__version__,
         url='https://github.com/snout-tools/snout-api',
         license='MIT',
@@ -24,8 +24,8 @@ if __name__ == "__main__":
         maintainer_email="jkbecker@bu.edu",
         description='Plugin API for the SDR-Based Network Observation Utility Toolkit (Snout).',
         long_description=read_long_description(),
-        #namespace_packages=['snout'],
-        packages=find_namespace_packages(include=["snout.*"]),
+        packages=['snout_api'],
+        #packages=find_namespace_packages(include=["snout.*"]),
         include_package_data=True,
         zip_safe=False,
         platforms='any',
