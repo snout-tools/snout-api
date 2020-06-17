@@ -1,5 +1,5 @@
 from setuptools import setup, find_namespace_packages
-from snout.api import __version__
+from snout_api import __version__
 
 links = []
 requires = [
