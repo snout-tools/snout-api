@@ -13,6 +13,9 @@ pytest-cov = "*"
 pre-commit = "*"
 
 [packages]
+pre-commit = "*"
 
 [requires]
-python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true
