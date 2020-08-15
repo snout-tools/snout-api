@@ -3,6 +3,7 @@ from queue import Queue
 
 class UI(object):
     def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.app = kwargs.get('app', None)
 
         self.print_queues = {}
