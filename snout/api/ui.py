@@ -3,7 +3,7 @@ from queue import Queue
 
 class SnoutUI(object):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__()
         self.app = kwargs.get('app', None)
 
         self.print_queues = {}

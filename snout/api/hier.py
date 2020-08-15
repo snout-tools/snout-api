@@ -1,6 +1,6 @@
 class AppHierarchy(object):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__()
         self._children = []
         self.parent = kwargs.get('parent', None)
 
