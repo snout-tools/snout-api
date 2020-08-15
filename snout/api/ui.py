@@ -11,3 +11,12 @@ class UI(object):
             if isinstance(queue, Queue):
                 self.print_queues[name] = queue
         self.window = kwargs.get('window', None)
+
+    def put(self, channel, value):
+        if channel in self.print_queues.keys():
+            self.print_queues[channel].put(value)
+        else:
+            if '_stdout' not in self.print_queues.keys():
+                self.print_queues['_stdout'] = Queue()
+            self.print_queues['_stdout'].put(value)
+            # TODO: Should probably log a warning for this fallback
