@@ -7,8 +7,7 @@ import appdirs
 import arrow
 
 from snout.api import classproperty
-
-from .event import EventMgmtCapability, SnoutEventHandler
+from snout.api.event import EventMgmtCapability, SnoutEventHandler
 
 LOG_LEVEL_FILE = logging.DEBUG
 LOG_LEVEL_STREAM = logging.ERROR  # logging.DEBUG

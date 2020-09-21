@@ -1,9 +1,9 @@
 import time
 from enum import IntFlag
 
-from .event import EventMgmtCapability
-from .hier import AppHierarchy
-from .log import Logger
+from snout.api.event import EventMgmtCapability
+from snout.api.hier import AppHierarchy
+from snout.api.log import Logger
 
 Status = IntFlag('Status', 'Unknown Idle Starting Running Stopping Stopped Complete Failed')
 
