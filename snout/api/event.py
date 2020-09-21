@@ -1,3 +1,6 @@
+from logging import StreamHandler
+
+
 class EventMgmtCapability(object):
     """ Event notification capability.
 
@@ -42,11 +45,11 @@ class Notification(object):
         self.kwargs = kwargs
 
 
-# class SnoutEventHandler(StreamHandler, EventMgmtCapability):
-#    def __init__(self, eventname='log'):
-#        super().__init__()
-#        self.eventname = eventname
-#
-#    def emit(self, record):
-#        msg = self.format(record)
-#        self.emitEvent(Notification(self.eventname, msg))
+class SnoutEventHandler(StreamHandler, EventMgmtCapability):
+    def __init__(self, eventname='log'):
+        super().__init__()
+        self.eventname = eventname
+
+    def emit(self, record):
+        msg = self.format(record)
+        self.emitEvent(Notification(self.eventname, msg))
