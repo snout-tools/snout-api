@@ -1,6 +1,3 @@
-from logging import StreamHandler
-
-
 class EventMgmtCapability(object):
     """ Event notification capability.
 
@@ -20,15 +17,15 @@ class EventMgmtCapability(object):
         if name in self.__class__._handlers and handler in self.__class__._handlers[name]:
             self.__class__._handlers[name].remove(handler)
 
-    def emitEvent(self, event):
+    def emitEvent(self, notification):
         handlers = set()
-        # Consider handlers for this event
-        handlers.update(self.__class__._handlers.get(event.name, set()))
+        # Consider handlers for this notification
+        handlers.update(self.__class__._handlers.get(notification.name, set()))
         # Consider catch-all handlers for this event type
-        topevent = event.name.split('.')[0]
+        topevent = notification.name.split('.')[0]
         handlers.update(self.__class__._handlers.get(topevent, set()))
         for handler in handlers:
-            handler(*event.args, **event.kwargs)
+            handler(*notification.args, **notification.kwargs)
         return True
 
     def eventName(self, proto, event):
@@ -45,11 +42,11 @@ class Notification(object):
         self.kwargs = kwargs
 
 
-class SnoutEventHandler(StreamHandler, EventMgmtCapability):
-    def __init__(self, eventname='log'):
-        super().__init__()
-        self.eventname = eventname
-
-    def emit(self, record):
-        msg = self.format(record)
-        self.emitEvent(Notification(self.eventname, msg))
+# class SnoutEventHandler(StreamHandler, EventMgmtCapability):
+#    def __init__(self, eventname='log'):
+#        super().__init__()
+#        self.eventname = eventname
+#
+#    def emit(self, record):
+#        msg = self.format(record)
+#        self.emitEvent(Notification(self.eventname, msg))

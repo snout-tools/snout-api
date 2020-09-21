@@ -1,5 +1,9 @@
-__version__ = 0.11
+__version__ = '0.1.2'
 
 
-class Witness:
-    pass
+class classproperty(object):
+    def __init__(self, f):
+        self.f = f
+
+    def __get__(self, obj, owner):
+        return self.f(owner)
