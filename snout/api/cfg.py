@@ -68,7 +68,12 @@ class Config(object):
 class Settings(SnoutAgent):
     schema = Map(
         {
-            'meta': Map({'created': Datetime(), 'modified': Datetime(),}),
+            'meta': Map(
+                {
+                    'created': Datetime(),
+                    'modified': Datetime(),
+                }
+            ),
             Optional('app', default=None): MapPattern(
                 Str(),
                 Str() | Int() | Float() | Datetime() | Seq(Str() | Int() | Float() | Datetime()),

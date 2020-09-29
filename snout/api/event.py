@@ -2,7 +2,7 @@ from logging import StreamHandler
 
 
 class EventMgmtCapability(object):
-    """ Event notification capability.
+    """Event notification capability.
 
     Objects inheriting from this class will be able to emit events, and to
     subscribe to events by registering event handlers.
@@ -36,8 +36,7 @@ class EventMgmtCapability(object):
 
 
 class Notification(object):
-    """ The Notification class used for the :class: EventMgmtCapability.
-    """
+    """The Notification class used for the :class: EventMgmtCapability."""
 
     def __init__(self, name, *args, **kwargs):
         self.name = name

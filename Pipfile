@@ -11,9 +11,14 @@ mypy = "*"
 pytest = "*"
 pytest-cov = "*"
 pre-commit = "*"
+pytest-html = "*"
+rope = "*"
 
 [packages]
 pre-commit = "*"
+tabulate = "*"
+arrow = "*"
+snout-api = {editable = true, path = "."}
 
 [requires]
 

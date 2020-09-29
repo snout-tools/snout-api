@@ -65,7 +65,9 @@ class Logger(EventMgmtCapability):
     def _fh_setup(self, formatter, log_level=LOG_LEVEL_FILE):
         log_dir = appdirs.user_log_dir('Snout')
         Path(log_dir).mkdir(exist_ok=True, parents=True)
-        log_filename = '{}.log'.format(arrow.now('America/New_York').format('YYYY-MM-DD'),)
+        log_filename = '{}.log'.format(
+            arrow.now('America/New_York').format('YYYY-MM-DD'),
+        )
         log_fullpath = os.sep.join([log_dir, log_filename])
         fh = logging.FileHandler(log_fullpath)
         fh.setLevel(log_level)
