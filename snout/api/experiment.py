@@ -1,6 +1,8 @@
 from time import monotonic as timer
 
 from snout.api.agent import SnoutAgent, Status
+from snout.api.event import EventMgmtCapability
+from snout.api.factory import Factory
 
 
 class ExperimentAPI(SnoutAgent):
@@ -69,3 +71,34 @@ class ExperimentClock:
     @property
     def elapsed(self):
         return timer() - self.t_start if self.t_start > 0 else 0
+
+
+class InstrumentAPI(SnoutAgent, EventMgmtCapability):
+
+    __base_agent__ = 'instrument'
+
+    @staticmethod
+    def factory(variant, *args, **kwargs):
+        return Factory(InstrumentAPI.__base_agent__, variant).instance()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if (
+            self.parent
+            and not isinstance(self.parent, SnoutAgent)
+            and self.parent.__class__.__name__ != 'Experiment'
+        ):
+            raise TypeError(
+                f'The parent of {self.__class__.__name__} must be Experiment ({type(self.parent)} provided).'
+            )
+
+    def __repr__(self):
+        return f'{self.name}:{self.path}, args:{repr(self.args)}, kwargs:{repr(self.kwargs)})'
+
+    @property
+    def protocol(self):
+        raise NotImplementedError('Please subclass Instrument and implement the protocol property.')
+
+    @property
+    def info(self):
+        raise NotImplementedError('Please subclass Instrument and implement the info property.')
