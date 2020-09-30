@@ -79,7 +79,8 @@ class InstrumentAPI(SnoutAgent, EventMgmtCapability):
 
     @staticmethod
     def factory(variant, *args, **kwargs):
-        return Factory(InstrumentAPI.__base_agent__, variant).instance()
+        inst = Factory(InstrumentAPI.__base_agent__, variant).instance()
+        return inst(*args, **kwargs)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
