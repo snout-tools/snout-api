@@ -5,6 +5,7 @@ from pathlib import Path
 
 import appdirs
 import arrow
+from zmq.log.handlers import PUBHandler
 
 from snout.api import classproperty
 from snout.api.event import EventMgmtCapability, SnoutEventHandler
@@ -62,6 +63,9 @@ class Logger(EventMgmtCapability):
         # Create Event-based Handler
         self._eh_setup(formatter, log_level=log_level_event)
 
+        # ZMQ Handler
+        self._zh_setup(formatter, log_level=log_level_event)
+
     def _fh_setup(self, formatter, log_level=LOG_LEVEL_FILE):
         log_dir = appdirs.user_log_dir('Snout')
         Path(log_dir).mkdir(exist_ok=True, parents=True)
@@ -86,6 +90,14 @@ class Logger(EventMgmtCapability):
         eh.setLevel(log_level)
         eh.setFormatter(formatter)
         self.logger.addHandler(eh)
+
+    def _zh_setup(self, formatter, log_level=LOG_LEVEL_EVENT):
+        zh = PUBHandler('tcp://127.0.0.1:12345')
+        zh.setLevel(log_level)
+        zh.setFormatter(formatter)
+        # zh.setFormatter(formatter + ' (line {lineno:>3})')
+        zh.setRootTopic(self.fullname)
+        self.logger.addHandler(zh)
 
     @property
     def logger(self):
