@@ -39,6 +39,8 @@ class Logger(EventMgmtCapability):
         logger (logging.Logger): A global logger for Snout that can be used outside of class instances
     """
 
+    _zh = PUBHandler('tcp://127.0.0.1:12345')
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # TODO: Fine tune logging setup https://docs.python.org/3/howto/logging-cookbook.html
@@ -95,7 +97,7 @@ class Logger(EventMgmtCapability):
         self.logger.addHandler(eh)
 
     def _zh_setup(self, formatter, log_level=LOG_LEVEL_EVENT):
-        zh = PUBHandler('tcp://127.0.0.1:12345')
+        zh = Logger._zh
         zh.setLevel(log_level)
         zh.setFormatter(formatter)
         zh.setFormatter(
