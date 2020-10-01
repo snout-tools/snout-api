@@ -126,7 +126,7 @@ class SettingsItem:
 
     @property
     def value(self):
-        return self._data
+        return self._data.value
 
     def isleaf(self):
         return not isinstance(self._data, dict)
