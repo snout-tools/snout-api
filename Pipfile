@@ -19,6 +19,7 @@ pre-commit = "*"
 tabulate = "*"
 arrow = "*"
 snout-api = {editable = true, path = "."}
+zmq = "*"
 
 [requires]
 

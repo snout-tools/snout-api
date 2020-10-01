@@ -43,6 +43,9 @@ class Logger(EventMgmtCapability):
         super().__init__(*args, **kwargs)
         # TODO: Fine tune logging setup https://docs.python.org/3/howto/logging-cookbook.html
 
+        # TODO: Naming is currently redundant / duplicated with SnoutAgent... needs untangling.
+        self._nickname = kwargs.get('name', None)
+
         log_level_file = kwargs.get('log_level_file', LOG_LEVEL_FILE)
         log_level_stream = kwargs.get('log_level_file', LOG_LEVEL_STREAM)
         log_level_event = kwargs.get('log_level_ui', LOG_LEVEL_EVENT)
@@ -95,9 +98,35 @@ class Logger(EventMgmtCapability):
         zh = PUBHandler('tcp://127.0.0.1:12345')
         zh.setLevel(log_level)
         zh.setFormatter(formatter)
-        # zh.setFormatter(formatter + ' (line {lineno:>3})')
+        zh.setFormatter(
+            logging.Formatter(formatter._fmt + ' (%(pathname)s, line #%(lineno)d)'), logging.DEBUG
+        )
         zh.setRootTopic(self.fullname)
         self.logger.addHandler(zh)
+
+    @property
+    def name(self):
+        """Hierarchical name of the SnoutAgent object.
+
+        Returns:
+            str: Hierarchical name of the SnoutAgent object.
+        """
+        me = f'{self.__module__}.{self.__class__.__name__}'
+        if self._nickname:
+            me += f'_{self._nickname}'
+        try:
+            return '.'.join([self.parent.name, me])
+        except AttributeError:
+            return me
+
+    @property
+    def fullname(self):
+        """The SnoutAgent's fullname, guaranteed to be unique.
+
+        Returns:
+            str: The SnoutAgent's fullname, guaranteed to be unique.
+        """
+        return f'{self.name}@{hex(id(self))}'
 
     @property
     def logger(self):

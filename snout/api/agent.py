@@ -56,7 +56,7 @@ class SnoutAgent(Logger, EventMgmtCapability, AppHierarchy):
         Returns:
             str: Hierarchical name of the SnoutAgent object.
         """
-        me = f'{self.__class__.__name__}'
+        me = f'{self.__module__}.{self.__class__.__name__}'
         if self._nickname:
             me += f'_{self._nickname}'
         try:
