@@ -65,7 +65,7 @@ class Config(object):
         return snoutfiles
 
 
-class Settings(SnoutAgent):
+class Settings(Logger):
     schema = Map(
         {
             'meta': Map(
