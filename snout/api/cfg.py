@@ -4,7 +4,7 @@ from glob import glob
 from pathlib import Path
 
 import appdirs
-from strictyaml import Datetime, Float, Int, Map, MapPattern, Optional, Seq, Str, load
+from strictyaml import Datetime, EmptyDict, Float, Int, Map, MapPattern, Optional, Seq, Str, load
 
 from snout.api import classproperty
 from snout.api.agent import SnoutAgent
@@ -76,24 +76,82 @@ class Settings(Logger):
             ),
             Optional('app', default=None): MapPattern(
                 Str(),
-                Str() | Int() | Float() | Datetime() | Seq(Str() | Int() | Float() | Datetime()),
+                Str()
+                | Int()
+                | Float()
+                | Datetime()
+                | Seq(Str() | Int() | Float() | Datetime())
+                | EmptyDict()
+                | MapPattern(
+                    Str(),
+                    Str()
+                    | Int()
+                    | Float()
+                    | Datetime()
+                    | Seq(Str() | Int() | Float() | Datetime())
+                    | EmptyDict()
+                    | MapPattern(
+                        Str(),
+                        Str()
+                        | Int()
+                        | Float()
+                        | Datetime()
+                        | Seq(Str() | Int() | Float() | Datetime())
+                        | EmptyDict(),
+                    ),
+                ),
             ),
             Optional('docker', default=None): MapPattern(
                 Str(),
-                Str() | Int() | Float() | Datetime() | Seq(Str() | Int() | Float() | Datetime()),
+                Str()
+                | Int()
+                | Float()
+                | Datetime()
+                | Seq(Str() | Int() | Float() | Datetime())
+                | EmptyDict()
+                | MapPattern(
+                    Str(),
+                    Str()
+                    | Int()
+                    | Float()
+                    | Datetime()
+                    | Seq(Str() | Int() | Float() | Datetime())
+                    | EmptyDict()
+                    | MapPattern(
+                        Str(),
+                        Str()
+                        | Int()
+                        | Float()
+                        | Datetime()
+                        | Seq(Str() | Int() | Float() | Datetime())
+                        | EmptyDict(),
+                    ),
+                ),
             ),
         }
     )
+    _schema_depth = {
+        'meta': 2,
+        'app': 4,
+        'docker': 4,
+    }
 
-    def __init__(self):
-        super().__init__(self)
-        self._configfile = os.sep.join([appdirs.user_config_dir(Config.appname), 'settings.yaml'])
+    def __init__(self, __configfile=None):
+        super().__init__()
+
+        # Set up settings file
+        self._configfile = (
+            os.sep.join([appdirs.user_config_dir(Config.appname), 'settings.yaml'])
+            if not __configfile
+            else __configfile
+        )
         Config.ensure_configpath()
-
         self.logger.debug(f'Settings file is {self._configfile}.')
+
+        # Read settings or apply default template
         try:
             with open(self._configfile) as f:
-                self._data = load(f.read(), Settings.schema).data
+                self._data = load(f.read(), Settings.schema)
         except FileNotFoundError:
             curdate = datetime.now()
             defaultconf = load(
@@ -104,37 +162,69 @@ meta:
 """,
                 Settings.schema,
             )
-            with open(self._configfile, 'w') as f:
-                f.write(defaultconf.as_yaml())
             self._data = defaultconf
+            self.save()
 
-    def __getattr__(self, key):
-        return SettingsItem(self._data[key], self, key)
+    def save(self):
+        try:
+            with open(self._configfile, 'w') as f:
+                f.write(self._data.as_yaml())
+            return True
+        except Exception as e:
+            self.logger.error(f'Config file could not be written ({e})')
+            return False
 
+    def get(self, key):
+        keypath = key.split('.')
+        d = self._data
+        while keypath:
+            k = keypath.pop(0)
+            if k in d.keys():
+                if keypath:
+                    d = d[k]
+                else:
+                    return d[k].data
+        raise ValueError('Settings key not found.')
 
-class SettingsItem:
-    def __init__(self, data, settings, path):
-        self._data = data
-        self._settings = settings
-        self._path = path
+    def set(self, key, value):
+        keypath = key.split('.')
+        for section, allowed_depth in Settings._schema_depth.items():
+            if keypath[0] == section and len(keypath) > allowed_depth:
+                raise ValueError(
+                    f'The {section} section does not allow more than {allowed_depth} levels.'
+                )
+        d = self._data
+        while keypath:
+            k = keypath.pop(0)
+            if k in d.keys():  # the key already exists
+                if keypath:
+                    d = d[k]  # iterate to the next node
+                else:
+                    self.logger.debug(f'Changing Settings item *{key}* from {d[k]} to {value}.')
+                    d[k] = value  # set the value of the leaf
+                    self.save()
+                    return
+            else:  # the key doesn't exist yet
+                if keypath:  # there is still path left to cover
+                    # create a dictionary containing the remaining path
+                    newd = {}
+                    d2 = newd
+                    while keypath:
+                        k2 = keypath.pop(0)
+                        if keypath:
+                            d2[k2] = {}
+                            d2 = d2[k2]
+                        else:
+                            d2[k2] = value
+                    # insert the dictionary into the main structure at the (previous) leaf
 
-    def __getattr__(self, key):
-        return SettingsItem(self._data[key], self._settings, '.'.join([self._path, key]))
-
-    def __repr__(self):
-        return f'SettingsItem({repr(self._data)})'
-
-    @property
-    def value(self):
-        return self._data.value
-
-    def isleaf(self):
-        return not isinstance(self._data, dict)
-
-    def children(self):
-        if not isinstance(self._data, dict):
-            return None
-        return self._data.keys()
+                    self.logger.debug(f'Creating new Settings item *{key}* with value {value}.')
+                    d[k] = newd
+                else:  # there is no path element left (this is a leaf)
+                    self.logger.debug(f'Creating new Settings item *{key}* with value {value}.')
+                    d[k] = value  # set the value of the leaf
+                self.save()
+                return
 
 
 class Snoutfile(SnoutAgent):
