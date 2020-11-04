@@ -10,6 +10,7 @@ requires = [
     'pyshark',
     'tabulate',
     'timeago',
+    'zmq',
 ]
 
 
