@@ -84,6 +84,7 @@ class InstrumentAPI(SnoutAgent, EventMgmtCapability):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.path = kwargs.get('path', None)
         if (
             self.parent
             and not isinstance(self.parent, SnoutAgent)
@@ -94,7 +95,7 @@ class InstrumentAPI(SnoutAgent, EventMgmtCapability):
             )
 
     def __repr__(self):
-        return f'{self.name}:{self.path}, args:{repr(self.args)}, kwargs:{repr(self.kwargs)})'
+        return f'{self.name}({repr(self.args)}, {repr(self.kwargs)})'
 
     @property
     def protocol(self):
