@@ -1,3 +1,5 @@
+import logging
+
 import pytest
 
 from snout.api.agent import SnoutAgent, Status
@@ -41,3 +43,14 @@ def test_snoutagent_transcript():
     coord.status = Status.Starting
     coord.status = Status.Stopped
     assert len(coord.statuslog) == 3
+
+
+def test_snoutagent_logsomething():
+    x = SnoutAgent()
+    x.logger.debug('debug test')
+    x.logger.info('info test')
+    x.logger.warning('warning test')
+    x.logger.error('error test')
+    x.logger.critical('critical test')
+    x.logger.exception('exception test')
+    x.logger.log(logging.DEBUG, 'log test')

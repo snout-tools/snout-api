@@ -5,10 +5,8 @@ VARIANT = 'fancy'
 
 
 def test_factory_properties():
+    assert isinstance(snout.api.factory.Factory._plugins, dict)
     f = snout.api.factory.Factory(MAIN)
-    assert isinstance(snout.api.factory.Factory._plugins, dict) and not bool(
-        snout.api.factory.Factory._plugins
-    )
     p = f.plugins()
     assert isinstance(p, dict) and bool(p)
     assert isinstance(snout.api.factory.Factory._plugins, dict) and bool(

@@ -80,7 +80,7 @@ class InstrumentAPI(SnoutAgent, EventMgmtCapability):
     @staticmethod
     def factory(variant, *args, **kwargs):
         inst = Factory(InstrumentAPI.__base_agent__, variant).instance()
-        return inst(*args, **kwargs)
+        return inst(*args, **kwargs) if inst else None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

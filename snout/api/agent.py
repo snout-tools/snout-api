@@ -8,7 +8,7 @@ from snout.api.log import Logger
 Status = IntFlag('Status', 'Unknown Idle Starting Running Stopping Stopped Complete Failed')
 
 
-class SnoutAgent(Logger, EventMgmtCapability, AppHierarchy):
+class SnoutAgent(EventMgmtCapability, AppHierarchy):
     """SnoutAgent is the main base class providing basic common functionality.
 
     Args:
@@ -26,6 +26,7 @@ class SnoutAgent(Logger, EventMgmtCapability, AppHierarchy):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         SnoutAgent.instances.append(self)
+        self.logger = Logger(agent=self)
         self.args = args
         self.kwargs = kwargs
         self._nickname = kwargs.get('name', None)
@@ -57,9 +58,9 @@ class SnoutAgent(Logger, EventMgmtCapability, AppHierarchy):
             str: Hierarchical name of the SnoutAgent object.
         """
         me = f'{self.__module__}.{self.__class__.__name__}'
-        if self._nickname:
-            me += f'_{self._nickname}'
         try:
+            if self._nickname:
+                me += f'_{self._nickname}'
             return '.'.join([self.parent.name, me])
         except AttributeError:
             return me

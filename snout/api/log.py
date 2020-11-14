@@ -8,7 +8,7 @@ import arrow
 from zmq.log.handlers import PUBHandler
 
 from snout.api import classproperty
-from snout.api.event import EventMgmtCapability, SnoutEventHandler
+from snout.api.event import SnoutEventHandler
 
 LOG_LEVEL_FILE = logging.DEBUG
 LOG_LEVEL_STREAM = logging.ERROR  # logging.DEBUG
@@ -32,7 +32,7 @@ class StaticLogger:
         return cls._logger
 
 
-class Logger(EventMgmtCapability):
+class Logger(object):
     """Logger provides universal logging functionality to all application classes.
 
     Attributes:
@@ -42,11 +42,9 @@ class Logger(EventMgmtCapability):
     _zh = PUBHandler('tcp://127.0.0.1:12345')
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
         # TODO: Fine tune logging setup https://docs.python.org/3/howto/logging-cookbook.html
 
-        # TODO: Naming is currently redundant / duplicated with SnoutAgent... needs untangling.
-        self._nickname = kwargs.get('name', None)
+        self.agent = kwargs.get('agent', None)
 
         log_level_file = kwargs.get('log_level_file', LOG_LEVEL_FILE)
         log_level_stream = kwargs.get('log_level_file', LOG_LEVEL_STREAM)
@@ -55,7 +53,7 @@ class Logger(EventMgmtCapability):
             self._logger = logging.getLogger(self.fullname)
         except AttributeError:
             self._logger = logging.getLogger(self.__class__.__name__)
-        self.logger.setLevel(logging.DEBUG)
+        self._logger.setLevel(logging.DEBUG)
 
         # create formatter and add it to the handlers
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -81,20 +79,20 @@ class Logger(EventMgmtCapability):
         fh = logging.FileHandler(log_fullpath)
         fh.setLevel(log_level)
         fh.setFormatter(formatter)
-        self.logger.addHandler(fh)
+        self._logger.addHandler(fh)
 
     def _ch_setup(self, formatter, log_level=LOG_LEVEL_STREAM):
         # create console handler with a higher log level
         ch = logging.StreamHandler()
         ch.setLevel(log_level)
         ch.setFormatter(formatter)
-        self.logger.addHandler(ch)
+        self._logger.addHandler(ch)
 
     def _eh_setup(self, formatter, log_level=LOG_LEVEL_EVENT):
         eh = SnoutEventHandler()
         eh.setLevel(log_level)
         eh.setFormatter(formatter)
-        self.logger.addHandler(eh)
+        self._logger.addHandler(eh)
 
     def _zh_setup(self, formatter, log_level=LOG_LEVEL_EVENT):
         zh = Logger._zh
@@ -104,7 +102,7 @@ class Logger(EventMgmtCapability):
             logging.Formatter(formatter._fmt + ' (%(pathname)s, line #%(lineno)d)'), logging.DEBUG
         )
         zh.setRootTopic(self.fullname)
-        self.logger.addHandler(zh)
+        self._logger.addHandler(zh)
 
     @property
     def name(self):
@@ -113,13 +111,15 @@ class Logger(EventMgmtCapability):
         Returns:
             str: Hierarchical name of the SnoutAgent object.
         """
-        me = f'{self.__module__}.{self.__class__.__name__}'
-        if self._nickname:
-            me += f'_{self._nickname}'
         try:
-            return '.'.join([self.parent.name, me])
+            return self.agent.fullname
+            # me = f'{self.__module__}.{self.__class__.__name__}'
+            # if self._nickname:
+            #     me += f'_{self._nickname}'
+            # try:
+            #     return '.'.join([self.parent.name, me])
         except AttributeError:
-            return me
+            return f'{self.__module__}.{self.__class__.__name__}'
 
     @property
     def fullname(self):
@@ -130,14 +130,26 @@ class Logger(EventMgmtCapability):
         """
         return f'{self.name}@{hex(id(self))}'
 
-    @property
-    def logger(self):
-        """The logging.Logger responsible for logging this object's activity.
+    def debug(self, *args, **kwargs):
+        return self._logger.debug(*args, *kwargs)
 
-        Returns:
-            logging.Logger: The logging.Logger responsible for logging this object's activity.
-        """
-        return self._logger
+    def info(self, *args, **kwargs):
+        return self._logger.info(*args, *kwargs)
+
+    def warning(self, *args, **kwargs):
+        return self._logger.warning(*args, *kwargs)
+
+    def error(self, *args, **kwargs):
+        return self._logger.error(*args, *kwargs)
+
+    def exception(self, *args, **kwargs):
+        return self._logger.exception(*args, *kwargs)
+
+    def critical(self, *args, **kwargs):
+        return self._logger.critical(*args, *kwargs)
+
+    def log(self, *args, **kwargs):
+        return self._logger.log(*args, *kwargs)
 
 
 # Debug Wrapper

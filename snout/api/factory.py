@@ -54,11 +54,11 @@ class Factory(object):
         print(result)
 
     def instance(self, variant=None):
-        variant = variant if variant else self.variant
+        variant = variant or self.variant
         if not variant:
             variant = ''
         for k, v in self.plugins().items():
             main, var = k.split('_')
             if main == self.main and var == str(variant):
                 return v
-        return False
+        return None

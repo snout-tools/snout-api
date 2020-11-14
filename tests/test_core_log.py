@@ -1,15 +1,38 @@
+import logging
+
 from snout.api.log import Logger
 
 
-class AClass(Logger):
-    def __init__(self):
-        super().__init__()
+def test_debug():
+    x = Logger()
+    x.debug('debug test')
 
 
-def test_local_logger():
-    a = AClass()
-    assert a.logger
+def test_info():
+    x = Logger()
+    x.info('info test')
 
 
-def test_global_logger():
-    assert AClass.logger
+def test_warning():
+    x = Logger()
+    x.warning('warning test')
+
+
+def test_error():
+    x = Logger()
+    x.error('error test')
+
+
+def test_critical():
+    x = Logger()
+    x.critical('critical test')
+
+
+def test_exception():
+    x = Logger()
+    x.exception('exception test')
+
+
+def test_log():
+    x = Logger()
+    x.log(logging.DEBUG, 'log test')
