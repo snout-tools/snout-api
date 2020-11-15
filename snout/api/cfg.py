@@ -246,10 +246,10 @@ class Snoutfile(SnoutAgent):
                     {
                         'class': Str(),
                         Optional('protocol', default=None): Str(),
-                        'path': Str(),
+                        Optional('path', default=None): Str(),
                         Optional('args', default=None): Seq(Str()) | Str(),
                         Optional('kwargs', default=None): Str() | MapPattern(Str(), Str()),
-                        Optional('output', default='pipeline'): Str(),
+                        Optional('output', default='transcript'): Str(),
                     }
                 ),
             ),
