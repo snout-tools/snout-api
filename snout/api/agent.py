@@ -5,7 +5,7 @@ from snout.api.event import EventMgmtCapability
 from snout.api.hier import AppHierarchy
 from snout.api.log import Logger
 
-Status = IntFlag('Status', 'Unknown Idle Starting Running Stopping Stopped Complete Failed')
+Status = IntFlag('Status', 'Unknown Idle Ready Starting Running Stopping Stopped Complete Failed')
 
 
 class SnoutAgent(EventMgmtCapability, AppHierarchy):

@@ -1,4 +1,60 @@
+import threading
 from logging import StreamHandler
+
+import zmq
+
+
+class EventSystem(object):
+    addr = 'ipc:///tmp/snout.eventsystem.z'
+    _ctx = None
+    _sock = None
+
+    @classmethod
+    def _ensurecontext(cls):
+        if not cls._ctx and not cls._sock:
+            cls._ctx = zmq.Context()
+            cls._sock = cls._ctx.socket(zmq.PUB)
+            cls._sock.bind(cls.addr)
+
+    @classmethod
+    def emit(cls, channel, message):
+        cls._ensurecontext()
+        cls._sock.send_multipart([channel.encode('utf-8'), message.encode('utf-8')])
+
+
+class EventListener(object):
+    def __init__(self, handlers=None, start=False):
+        self._context = zmq.Context()
+        self._sock = self._context.socket(zmq.SUB)
+        self._sock.connect(EventSystem.addr)
+        self._stop = threading.Event()
+        self._listener = None
+        self.handlers = {}
+        if isinstance(handlers, dict):
+            for k, v in handlers.items():
+                if callable(v):
+                    self.handlers[k] = v
+                    self._sock.setsockopt_string(zmq.SUBSCRIBE, k)
+                else:
+                    raise TypeError(f'Provided event handler {v} is not callable.')
+
+    def start(self):
+        self._listener = threading.Thread(target=self._listener_loop, daemon=True)
+        self._listener.start()
+
+    def _listener_loop(self):
+        while not self._stop.is_set():
+            self.listen()
+
+    def listen(self):
+        rec = self._sock.recv_multipart()
+        if not self._stop.is_set():
+            handler = rec[0].decode('utf-8')
+            msg = rec[1].decode('utf-8')
+            self.handlers[handler](msg)
+
+    def stop(self):
+        self._stop.set()
 
 
 class EventMgmtCapability(object):
