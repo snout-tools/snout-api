@@ -20,6 +20,7 @@ tabulate = "*"
 arrow = "*"
 snout-api = {editable = true, path = "."}
 zmq = "*"
+u-msgpack-python = "*"
 
 [requires]
 

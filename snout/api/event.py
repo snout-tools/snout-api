@@ -1,6 +1,6 @@
 import threading
 from logging import StreamHandler
-
+import umsgpack
 import zmq
 
 
@@ -19,7 +19,7 @@ class EventSystem(object):
     @classmethod
     def emit(cls, channel, message):
         cls._ensurecontext()
-        cls._sock.send_multipart([channel.encode('utf-8'), message.encode('utf-8')])
+        cls._sock.send_multipart([channel.encode('utf-8'), umsgpack.packb(message)])
 
 
 class EventListener(object):
@@ -50,7 +50,7 @@ class EventListener(object):
         rec = self._sock.recv_multipart()
         if not self._stop.is_set():
             handler = rec[0].decode('utf-8')
-            msg = rec[1].decode('utf-8')
+            msg = umsgpack.unpackb(rec[1])
             self.handlers[handler](msg)
 
     def stop(self):
