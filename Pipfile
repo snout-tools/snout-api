@@ -19,8 +19,8 @@ pre-commit = "*"
 tabulate = "*"
 arrow = "*"
 snout-api = {editable = true, path = "."}
-zmq = "*"
 u-msgpack-python = "*"
+pyzmq = "*"
 
 [requires]
 
