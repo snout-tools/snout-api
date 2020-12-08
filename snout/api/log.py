@@ -98,9 +98,9 @@ class Logger(object):
         zh = Logger._zh
         zh.setLevel(log_level)
         zh.setFormatter(formatter)
-        zh.setFormatter(
-            logging.Formatter(formatter._fmt + ' (%(pathname)s, line #%(lineno)d)'), logging.DEBUG
-        )
+        # zh.setFormatter(
+        #     logging.Formatter(formatter._fmt + ' (%(pathname)s, line #%(lineno)d)'), logging.DEBUG
+        # )
         zh.setRootTopic(self.fullname)
         self._logger.addHandler(zh)
 
