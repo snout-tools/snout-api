@@ -113,7 +113,7 @@ class SnoutAgent(EventMgmtCapability, AppHierarchy):
         # create argument set from base arguments + custom arguments
         oargs, okwargs = self.arg_override(*args, **kwargs)
         self.runlogic(oargs, okwargs)
-        self.status = Status.Complete
+        self.status |= Status.Complete
 
     def runlogic(self, *args, **kwargs):
         raise NotImplementedError(
