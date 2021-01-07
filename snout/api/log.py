@@ -39,9 +39,12 @@ class Logger(object):
         logger (logging.Logger): A global logger for Snout that can be used outside of class instances
     """
 
-    _zh = PUBHandler('tcp://127.0.0.1:12345')
+    _zh = None
 
     def __init__(self, *args, **kwargs):
+        if not Logger._zh:
+            Logger._zh = PUBHandler('tcp://127.0.0.1:12345')
+
         # TODO: Fine tune logging setup https://docs.python.org/3/howto/logging-cookbook.html
 
         self.agent = kwargs.get('agent', None)

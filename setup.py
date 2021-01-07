@@ -5,11 +5,13 @@ from snout.api import __version__
 links = []
 requires = [
     'appdirs',
+    'arrow',
     'strictyaml',
     'click',
     'pyshark',
     'tabulate',
     'timeago',
+    'u-msgpack-python',
     'zmq',
 ]
 
