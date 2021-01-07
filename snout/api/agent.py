@@ -4,6 +4,7 @@ from enum import IntFlag
 from snout.api.event import EventMgmtCapability
 from snout.api.hier import AppHierarchy
 from snout.api.log import Logger
+from snout.api.factory import Factory
 
 Status = IntFlag('Status', 'Unknown Idle Ready Starting Running Stopping Stopped Complete Failed')
 
@@ -41,6 +42,14 @@ class SnoutAgent(EventMgmtCapability, AppHierarchy):
     @classmethod
     def find_instance(cls, searchterm):
         return [i for i in SnoutAgent.instances if searchterm in i.name]
+
+    @classmethod
+    def factory(cls, variant, *args, **kwargs):
+        if hasattr(cls, '__base_agent__'):
+            inst = Factory(cls.__base_agent__, variant).instance()
+            return inst(*args, **kwargs) if inst else None
+        else:
+            raise AttributeError(f'To use factory, {cls.__class__.__name__} must have a __base_agent__ attribute set')
 
     @property
     def app(self):
@@ -113,7 +122,7 @@ class SnoutAgent(EventMgmtCapability, AppHierarchy):
         # create argument set from base arguments + custom arguments
         oargs, okwargs = self.arg_override(*args, **kwargs)
         self.runlogic(oargs, okwargs)
-        self.status = Status.Complete
+        self.status |= Status.Complete
 
     def runlogic(self, *args, **kwargs):
         raise NotImplementedError(

@@ -77,11 +77,6 @@ class InstrumentAPI(SnoutAgent, EventMgmtCapability):
 
     __base_agent__ = 'instrument'
 
-    @staticmethod
-    def factory(variant, *args, **kwargs):
-        inst = Factory(InstrumentAPI.__base_agent__, variant).instance()
-        return inst(*args, **kwargs) if inst else None
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.path = kwargs.get('path', None)
@@ -104,3 +99,19 @@ class InstrumentAPI(SnoutAgent, EventMgmtCapability):
     @property
     def info(self):
         raise NotImplementedError('Please subclass Instrument and implement the info property.')
+
+
+class StepConditionAPI(SnoutAgent):
+
+    __base_agent__ = 'stepcondition'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+class ProcessingQueueAPI(SnoutAgent, EventMgmtCapability):
+
+    __base_agent__ = 'processingqueue'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
