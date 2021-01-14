@@ -61,14 +61,14 @@ class GnuradioHandlerAPI(SnoutAgent):
     def runlogic(self):
 
         def sig_handler(sig=None, frame=None):
-            self.stop()
-            self.wait()
+            self.tb.stop()
+            self.tb.wait()
 
-            self.exit(0)
+            sys.exit(0)
 
         signal.signal(signal.SIGINT, sig_handler)
         signal.signal(signal.SIGTERM, sig_handler)
 
-        self.start()
+        self.tb.start()
 
-        self.wait()
+        self.tb.wait()
