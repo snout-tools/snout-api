@@ -20,7 +20,7 @@ class GnuradioComponentAPI(SnoutAgent):
         self.center_freq = kwargs.get("center_freq") # default center freq (can be altered)
         self.mode = None # tx, rx, rf
         #TODO: attributes/properties for rx and tx connect blocks
-        # self.build_component()
+        self.build_component()
     
     def build_component(self):
         """Add code here to actually initialize the block and
@@ -66,7 +66,7 @@ class GnuradioHandlerAPI(SnoutAgent):
         gr.top_block.__init__(self.tb, self.name)
         self.center_freq = None
 
-    def runlogic(self):
+    def runlogic(self, *args, **kwargs):
 
         def sig_handler(sig=None, frame=None):
             self.tb.stop()
@@ -79,4 +79,9 @@ class GnuradioHandlerAPI(SnoutAgent):
 
         self.tb.start()
 
-        self.tb.wait()
+        # self.tb.wait()
+    
+    def stoplogic(self, *args, **kwargs):
+
+        self.tb.stop()
+
