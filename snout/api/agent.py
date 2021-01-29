@@ -58,6 +58,18 @@ class SnoutAgent(EventMgmtCapability, AppHierarchy):
         if self.parent:
             return self.parent.app
         return None
+    
+    @property
+    def nickname(self):
+        """Nickname of the SnoutAgent object. If a nickname doesn't exist,
+        then return the class name of the object
+
+        Returns:
+            str: Nickname of the SnoutAgent object
+        """
+        if self._nickname is None:
+            return self.__class__.__name__
+        return self._nickname
 
     @property
     def name(self):
