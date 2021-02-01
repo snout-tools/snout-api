@@ -293,13 +293,20 @@ class Snoutfile(SnoutAgent):
             snoutfiles.append(Snoutfile(path))
         return snoutfiles
 
-    def __init__(self, path, name=None, app=None):
+    def __init__(self, path=None, data=None, name=None, app=None):
         super().__init__(name=name, app=app)
         self._path = path
-        if self._path:
+        if data:
+            self.logger.info('Initializing from data...')
+            self._data = load(data, Snoutfile.schema).data
+        elif self._path:
             self.logger.info(f'Initializing from file {self.path}...')
             with open(self.path) as f:
                 self._data = load(f.read(), Snoutfile.schema).data
+        else:
+            raise Exception(
+                'Snoutfile cannot be initialized with no path or data (neither provided).'
+            )
 
     @property
     def path(self):
